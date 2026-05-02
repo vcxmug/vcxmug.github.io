@@ -11,17 +11,26 @@
 </head>
 <body>
 <h1>可信时间戳索引</h1>
-<p>每篇文章对应一个 <strong>RFC 3161 时间戳令牌</strong>（<code>.tsr</code> 文件），由第三方时间戳机构（TSA）签发。</p>
+<p>每篇文章对应一个 <strong>RFC 3161 时间戳令牌</strong>（<code>.tsr</code> 文件），由 <a href="https://freetsa.org">FreeTSA.org</a> 签发。</p>
 
 <h2>如何验证</h2>
-<pre># 1. 获取原始 Markdown 文件
-#    （可从 <a href="https://github.com/vcxmug/blog-source">blog-source</a> 找到对应版本）
+<pre># 1. 获取原始 Markdown 文件（可从 blog-source 仓库获取）
 
-# 2. 下载 TSA 根证书
-curl -O https://freetsa.org/files/tsa.crt
+# 2. 下载此目录下的证书
+#    tsa.crt  — TSA 签名证书
+#    cacert.pem — 根 CA 证书
 
 # 3. 验证时间戳
-openssl ts -verify -data post.md -in post.tsr -CAfile tsa.crt</pre>
+openssl ts -verify -data post.md -in post.tsr \
+  -untrusted tsa.crt -CAfile cacert.pem
+
+# 输出 Verification: OK 即验证成功</pre>
+
+<h2>证书文件</h2>
+<ul>
+  <li><a href="/timestamps/tsa.crt">tsa.crt</a> — TSA 签名证书</li>
+  <li><a href="/timestamps/cacert.pem">cacert.pem</a> — 根 CA 证书</li>
+</ul>
 
 <h2>时间戳文件列表</h2>
 <ul id="list"></ul>
