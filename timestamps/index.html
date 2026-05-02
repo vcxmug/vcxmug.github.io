@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<title>可信时间戳索引</title>
+<style>
+  body { font-family: system-ui; max-width: 720px; margin: 2rem auto; padding: 0 1rem; line-height: 1.7; }
+  code { background: #f5f5f5; padding: 2px 6px; border-radius: 4px; }
+  pre { background: #f5f5f5; padding: 1rem; border-radius: 6px; overflow-x: auto; }
+</style>
+</head>
+<body>
+<h1>可信时间戳索引</h1>
+<p>每篇文章对应一个 <strong>RFC 3161 时间戳令牌</strong>（<code>.tsr</code> 文件），由第三方时间戳机构（TSA）签发。</p>
+
+<h2>如何验证</h2>
+<pre># 1. 获取原始 Markdown 文件
+#    （可从 <a href="https://github.com/vcxmug/blog-source">blog-source</a> 找到对应版本）
+
+# 2. 下载 TSA 根证书
+curl -O https://freetsa.org/files/tsa.crt
+
+# 3. 验证时间戳
+openssl ts -verify -data post.md -in post.tsr -CAfile tsa.crt</pre>
+
+<h2>时间戳文件列表</h2>
+<ul id="list"></ul>
+
+<script>
+fetch('/timestamps/index.json')
+  .then(r => r.json())
+  .then(data => {
+    const ul = document.getElementById('list');
+    data.forEach(item => {
+      const li = document.createElement('li');
+      li.innerHTML = `<strong>${item.slug}</strong> — <a href="${item.tsr}">下载 .tsr</a> (来源: <code>${item.source}</code>)`;
+      ul.appendChild(li);
+    });
+  });
+</script>
+</body>
+</html>
